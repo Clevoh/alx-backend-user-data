@@ -63,15 +63,15 @@ def get_logger() -> logging.Logger:
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Get a connector to a database
     """
-    host = environ.get('PERSONAL_DATA_DB_HOST')
-    user = environ.get('PERSONAL_DATA_DB_USERNAME')
-    password = environ.get('PERSONAL_DATA_DB_PASSWORD')
+    host = environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
+    user = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = environ.get('PERSONAL_DATA_DB_PASSWORD', '')
     db = environ.get('PERSONAL_DATA_DB_NAME')
 
-    cur = mysql.connector.connection.MySQLConnection(
+    conn = mysql.connector.connect(
           host=host, user=user, password=password, database=db)
 
-    return cur
+    return conn
 
 
 def main():
@@ -85,7 +85,8 @@ def main():
     logger = get_logger()
 
     for row in cursor:
-        str_row = ''.join(f'{f}={str(f)}; ' for r, f in zip(row, field_names))
+        # Correctly format the row data for logging
+        str_row = ''.join(f'{field}={row[idx]}; ' for idx, field in enumerate(field_names))
         logger.info(str_row.strip())
 
     cursor.close()
@@ -94,3 +95,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Handles user personal data
+"""Handling user personal data
 """
 import logging
 import mysql.connector
@@ -63,15 +63,15 @@ def get_logger() -> logging.Logger:
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Get a connector to a database
     """
-    host = environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
-    user = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
-    password = environ.get('PERSONAL_DATA_DB_PASSWORD', '')
+    host = environ.get('PERSONAL_DATA_DB_HOST')
+    user = environ.get('PERSONAL_DATA_DB_USERNAME')
+    password = environ.get('PERSONAL_DATA_DB_PASSWORD')
     db = environ.get('PERSONAL_DATA_DB_NAME')
 
-    conn = mysql.connector.connect(
+    cur = mysql.connector.connection.MySQLConnection(
           host=host, user=user, password=password, database=db)
 
-    return conn
+    return cur
 
 
 def main():
@@ -85,8 +85,7 @@ def main():
     logger = get_logger()
 
     for row in cursor:
-        # Correctly format the row data for logging
-        str_row = ''.join(f'{field}={row[idx]}; ' for idx, field in enumerate(field_names))
+        str_row = ''.join(f'{f}={str(f)}; ' for r, f in zip(row, field_names))
         logger.info(str_row.strip())
 
     cursor.close()
@@ -95,4 +94,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

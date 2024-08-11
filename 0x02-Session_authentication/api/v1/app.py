@@ -61,6 +61,7 @@ def authenticate_user():
             user = auth.current_user(request)
             if auth_header is None:
                 abort(401)
+            user = auth.current_user(request)
             if user is None:
                 abort(403)
             request.current_user = user
